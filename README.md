@@ -16,8 +16,16 @@ The syntax for use within your Markdown files is
 
 ```md
 <!--- #if DEBUG --->
-# md-condition
+# md-condition DEBUG
 <!--- #endif --->
+
+<!--- #if RELEASE --->
+# md-condition RELEASE
+<!--- #endif --->
+```
+
+```html
+<h1>md-condition DEBUG</h1>
 ```
 
 ## MkDocs Integration
@@ -27,5 +35,5 @@ In your mkdocs.yml add this to markdown_extensions.
 ```yaml
 markdown_extensions:
   - md_condition:
-      condition: DEBUG
+      symbol: DEBUG
 ```
