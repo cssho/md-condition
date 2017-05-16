@@ -6,15 +6,12 @@ class ConditionExtension(Extension):
 
     def __init__(self, **kwargs):
         self.config = {
-            'condition': ['', 'Condition syombol'],
+            'symbol': ['', 'Condition syombol'],
         }
         super(ConditionExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
-        md.preprocessor.add('condition',
-            ConditionProcessor(md),
-            '>html_block')
+        md.preprocessors.add('condition',
+            ConditionPreprocessor(md, self),
+            '_begin')
         md.registerExtension(self)
-
-def makeExtension(**kwargs):
-    return ConditionExtension(**kwargs)
