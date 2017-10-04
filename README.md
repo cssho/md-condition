@@ -9,7 +9,7 @@ which allows conditional compilations to be inserted into the text.
 This module can now be installed using `pip`.
 
 ```
-$ pip install markdown-blockdiag
+$ pip install md-condition
 ```
 
 ## Usage
