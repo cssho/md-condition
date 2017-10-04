@@ -17,13 +17,13 @@ $ pip install md-condition
 The syntax for use within your Markdown files is
 
 ```md
-<!--- #if DEBUG --->
+<!--- #if DEBUG -->
 # md-condition DEBUG
 <!--- #endif --->
 
-<!--- #if RELEASE --->
+<!--- #if RELEASE -->
 # md-condition RELEASE
-<!--- #endif --->
+<!--- #endif -->
 ```
 
 ```html
