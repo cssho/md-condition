@@ -8,6 +8,7 @@ class ConditionPreprocessor(Preprocessor):
 
     RE_START = re.compile(r'<!--- #if .* -->')
     RE_END = re.compile(r'<!--- #endif -->')
+    RE_ELSE = re.compile(r'<!--- #else -->')
 
     def __init__(self, md, extension):
         super(ConditionPreprocessor, self).__init__(md)
@@ -22,16 +23,17 @@ class ConditionPreprocessor(Preprocessor):
         for line in lines:
             start_head = False
             if not matching:
-                match_start = self.RE_START.match(line)
-                if match_start:
+                if self.RE_START.match(line):
                     start_head = True
                     matching = True
                     symbol_match_start = self.re_symbol_start.match(line)
                     if symbol_match_start:
                         symbol_matching = True
             else:
-                match_end = self.RE_END.match(line)
-                if match_end:
+                if self.RE_ELSE.match(line):
+                    symbol_matching = not symbol_matching
+                    continue
+                if self.RE_END.match(line):
                     matching = False
                     symbol_matching = False
                     continue

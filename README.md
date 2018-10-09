@@ -19,15 +19,20 @@ The syntax for use within your Markdown files is
 ```md
 <!--- #if DEBUG -->
 # md-condition DEBUG
+<!--- #else -->
+not DEBUG
 <!--- #endif --->
 
 <!--- #if RELEASE -->
 # md-condition RELEASE
+<!--- #else -->
+not RELASE
 <!--- #endif -->
 ```
 
 ```html
 <h1>md-condition DEBUG</h1>
+<p>not RELASE</p>
 ```
 
 ## MkDocs Integration

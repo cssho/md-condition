@@ -37,6 +37,29 @@ class TestCondition(unittest.TestCase):
             <h1>3</h1>"""
         self.assertExpectedMarkdown(md_input, expected_result)
 
+    def test_single_else(self):
+        md_input = """\
+            # 1
+            <!--- #if DEBUG -->
+            DEBUG
+            <!--- #else -->
+            not DEBUG
+            <!--- #endif -->
+            # 2
+            <!--- #if RELEASE -->
+            RELEASE
+            <!--- #else -->
+            not RELEASE
+            <!--- #endif -->
+            # 3"""
+        expected_result = """\
+            <h1>1</h1>
+            <p>DEBUG</p>
+            <h1>2</h1>
+            <p>not RELEASE</p>
+            <h1>3</h1>"""
+        self.assertExpectedMarkdown(md_input, expected_result)
+
     def test_double(self):
         md_input = """\
             # 1
@@ -54,3 +77,29 @@ class TestCondition(unittest.TestCase):
             <h1>2</h1>
             <h1>3</h1>"""
         self.assertExpectedMarkdown(md_input, expected_result)
+
+    def test_double_else(self):
+        md_input = """\
+            # 1
+            <!--- #if DEBUG RELEASE -->
+            DEBUG RELEASE
+            <!--- #else -->
+            else DEBUG RELEASE
+            <!--- #endif -->
+            # 2
+            <!--- #if RELEASE -->
+            RELEASE
+            <!--- #else -->
+            not RELEASE
+            <!--- #endif -->
+            # 3"""
+        expected_result = """\
+            <h1>1</h1>
+            <p>DEBUG RELEASE</p>
+            <h1>2</h1>
+            <p>not RELEASE</p>
+            <h1>3</h1>"""
+        self.assertExpectedMarkdown(md_input, expected_result)
+
+if __name__ == "__main__":
+    unittest.main()

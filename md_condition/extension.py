@@ -10,8 +10,8 @@ class ConditionExtension(Extension):
         }
         super(ConditionExtension, self).__init__(**kwargs)
 
-    def extendMarkdown(self, md, md_globals):
-        md.preprocessors.add('condition',
+    def extendMarkdown(self, md):
+        md.preprocessors.register(
             ConditionPreprocessor(md, self),
-            '_begin')
-        md.registerExtension(self)
+            'condition',
+            50)
