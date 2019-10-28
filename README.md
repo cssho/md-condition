@@ -1,6 +1,6 @@
 # md-condition
 
-This is an extension to [Python-Markdown](https://pythonhosted.org/Markdown/)
+This is an extension to [Python-Markdown](https://python-markdown.github.io)
 which allows conditional compilations to be inserted into the text.
 
 [![PyPI version](https://badge.fury.io/py/md-condition.svg)](https://badge.fury.io/py/md-condition)
