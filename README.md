@@ -26,13 +26,13 @@ not DEBUG
 <!--- #if RELEASE -->
 # md-condition RELEASE
 <!--- #else -->
-not RELASE
+not RELEASE
 <!--- #endif -->
 ```
 
 ```html
 <h1>md-condition DEBUG</h1>
-<p>not RELASE</p>
+<p>not RELEASE</p>
 ```
 
 ## MkDocs Integration
