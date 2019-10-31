@@ -15,16 +15,26 @@ class ConditionPreprocessor(Preprocessor):
         symbol = extension.getConfig('symbol')
         self.re_symbol_start = re.compile(r'<!--- #if .*' + symbol + r'.* -->')
 
+    def validate(self, lines):
+        block_counter = 0
+        for line in lines:
+            if self.RE_START.match(line):
+                block_counter+=1
+            if self.RE_END.match(line):
+                block_counter-=1
+
+        assert block_counter == 0, "Unbalanced if / endif blocks"
+
     def run(self, lines):
+        self.validate(lines)
         new_lines = []
-        
+
         matching = False
         symbol_matching = False
         for line in lines:
             start_head = False
             if not matching:
                 if self.RE_START.match(line):
-                    start_head = True
                     matching = True
                     symbol_match_start = self.re_symbol_start.match(line)
                     if symbol_match_start:
@@ -39,4 +49,5 @@ class ConditionPreprocessor(Preprocessor):
                     continue
             if not matching or symbol_matching and not start_head:
                 new_lines.append(line)
+
         return new_lines
