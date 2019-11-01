@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='md-condition',
-    version='0.1.6',
+    version='0.1.7',
     packages=find_packages(),
     url='https://github.com/cssho/md-condition',
     license='MIT',
