@@ -35,6 +35,7 @@ class ConditionPreprocessor(Preprocessor):
             start_head = False
             if not matching:
                 if self.RE_START.match(line):
+                    start_head = True
                     matching = True
                     symbol_match_start = self.re_symbol_start.match(line)
                     if symbol_match_start:

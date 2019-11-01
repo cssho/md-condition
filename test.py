@@ -8,7 +8,8 @@ from md_condition.extension import ConditionExtension
 class TestCondition(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.md = markdown.Markdown(extensions=[ConditionExtension(symbol='DEBUG')])
+        cls.md = markdown.Markdown(
+            extensions=[ConditionExtension(symbol='DEBUG')])
 
     def assertExpectedMarkdown(self, md_input, expected_output):
         output = self.md.convert(textwrap.dedent(md_input))
@@ -100,6 +101,23 @@ class TestCondition(unittest.TestCase):
             <p>not RELEASE</p>
             <h1>3</h1>"""
         self.assertExpectedMarkdown(md_input, expected_result)
+
+    def test_unbalance(self):
+        md_input = """\
+            <!--- #if DEBUG RELEASE -->
+            # 1"""
+        with self.assertRaises(AssertionError):
+            self.md.convert(textwrap.dedent(md_input))
+
+    def test_unbalance_end(self):
+        md_input = """\
+            <!--- #if DEBUG RELEASE -->
+            # 1
+            <!--- #endif -->
+            <!--- #endif -->"""
+        with self.assertRaises(AssertionError):
+            self.md.convert(textwrap.dedent(md_input))
+
 
 if __name__ == "__main__":
     unittest.main()
