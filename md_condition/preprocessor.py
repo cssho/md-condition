@@ -17,13 +17,16 @@ class ConditionPreprocessor(Preprocessor):
 
     def validate(self, lines):
         block_counter = 0
-        for line in lines:
+        target_lines_start = []
+        target_lines_end = []
+        for index, line in enumerate(lines):
             if self.RE_START.match(line):
-                block_counter+=1
+                target_lines_start.append(str(index) + '. ' + line)
             if self.RE_END.match(line):
-                block_counter-=1
+                target_lines_end.append(str(index) + '. ' + line)
 
-        assert block_counter == 0, "Unbalanced if / endif blocks"
+        assert len(target_lines_start) == len(target_lines_end), "Unbalanced if / endif blocks\n{}\n{}".format(
+            target_lines_start, target_lines_end)
 
     def run(self, lines):
         self.validate(lines)

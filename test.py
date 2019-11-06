@@ -106,8 +106,9 @@ class TestCondition(unittest.TestCase):
         md_input = """\
             <!--- #if DEBUG RELEASE -->
             # 1"""
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(AssertionError) as ae:
             self.md.convert(textwrap.dedent(md_input))
+        print(ae.exception)
 
     def test_unbalance_end(self):
         md_input = """\
@@ -115,8 +116,9 @@ class TestCondition(unittest.TestCase):
             # 1
             <!--- #endif -->
             <!--- #endif -->"""
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(AssertionError) as ae:
             self.md.convert(textwrap.dedent(md_input))
+        print(ae.exception)
 
 
 if __name__ == "__main__":
