@@ -21,7 +21,7 @@ The syntax for use within your Markdown files is
 # md-condition DEBUG
 <!--- #else -->
 not DEBUG
-<!--- #endif --->
+<!--- #endif -->
 
 <!--- #if RELEASE -->
 # md-condition RELEASE
