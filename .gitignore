@@ -101,3 +101,6 @@ ENV/
 .mypy_cache/
 
 .vscode/
+# Claude Code personal
+CLAUDE.local.md
+.claude/settings.local.json
