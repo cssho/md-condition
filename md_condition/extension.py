@@ -7,7 +7,7 @@ from md_condition.preprocessor import ConditionPreprocessor
 class ConditionExtension(Extension):
     def __init__(self, **kwargs) -> None:
         self.config = {
-            "symbol": ["", "Condition symbol"],
+            "symbol": ["", "Defined symbol(s): a string separated by spaces/`|`, or a list"],
         }
         super().__init__(**kwargs)
 
