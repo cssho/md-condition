@@ -18,7 +18,7 @@ class TestCondition(unittest.TestCase):
         try:
             self.assertEqual(output, expected)
         except AssertionError as e:
-            raise AssertionError('\n' + re.sub("' != '", '\n!=\n', e.message))
+            raise AssertionError('\n' + re.sub("' != '", '\n!=\n', str(e)))
 
     def test_single(self):
         md_input = """\
