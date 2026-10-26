@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md-condition"
+dynamic = ["version"]
+description = "Python-Markdown extension to use conditional compilations"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Sho Sato", email = "rizeupbass@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["Markdown>=3.2"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+[project.urls]
+Homepage = "https://github.com/cssho/md-condition"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.14"]
+
+[tool.setuptools]
+packages = ["md_condition"]
+
+# Version comes from the git tag (v0.1.9 -> 0.1.9)
+[tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

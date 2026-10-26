@@ -4,17 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-`python` on this machine is the Windows Store stub, not a real interpreter. Run everything through `uv`:
+`python` on this machine is the Windows Store stub, not a real interpreter. Run everything through `uv` (dev deps live in the `dev` dependency group of `pyproject.toml`):
 
-- Tests: `uv run --no-project --with markdown --with pytest pytest -v test.py` (tests live in the root `test.py`, not a `tests/` dir)
-- Single test: append `-k test_single_else`
-- Lint (the CI gate that fails builds): `uv run --no-project --with flake8 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`
-- CI also runs flake8 with `--max-line-length=127 --max-complexity=10` as warnings only
+- Tests: `uv run pytest` (single test: `-k single_else`)
+- Lowest supported Markdown: `uv run --isolated --python 3.10 --with "markdown==3.2.*" pytest`
+- Lint/format (CI fails on either): `uv run ruff check .` and `uv run ruff format --check .`
+- Build: `uv build`. The version comes from the latest git tag via setuptools-scm; there is no version field to edit.
 
 ## Code
 
-- Target modern Python 3 (CI matrix: 3.10–3.14). Py2-isms (`from __future__`, `super(Cls, self)`) may be modernized.
-- master is protected by a ruleset: changes go through PRs, and the `ci-ok` check (aggregates the matrix) must pass.
+- Python >=3.10, Markdown >=3.2. Markdown 3.0/3.1 can't import on modern Python (they need `pkg_resources`).
+- master is protected by a ruleset: changes go through PRs, and the `ci-ok` check (aggregates lint + the test matrix) must pass.
 - The whole extension is a single `Preprocessor` in `md_condition/preprocessor.py`, registered at priority 50. `makeExtension` in `__init__.py` is what lets `md_condition` work as a string name in MkDocs `markdown_extensions`.
 - Known behaviors to keep in mind (don't change them silently, since they're user-visible):
   - The symbol is interpolated into a regex unescaped and matched as a substring (`.*DEBUG.*`), so `DEBUG` also matches `#if DEBUG_X`.
@@ -23,5 +23,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Release
 
-1. Bump `version` in `setup.py` and commit.
-2. Create a GitHub release with tag `v<version>`. `.github/workflows/pythonpublish.yml` builds and uploads to PyPI via Trusted Publishing (OIDC, GitHub environment `pypi`; no API token secrets).
+Create a GitHub release with tag `v<version>` (use `/release`). `.github/workflows/pythonpublish.yml` builds with the tag as the version and uploads to PyPI via Trusted Publishing (OIDC, GitHub environment `pypi`; no API token secrets).
