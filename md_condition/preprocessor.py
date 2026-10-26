@@ -21,6 +21,7 @@ class ConditionPreprocessor(Preprocessor):
     RE_START = re.compile(r"<!--- #if (.*?) -->")
     RE_END = re.compile(r"<!--- #endif -->")
     RE_ELSE = re.compile(r"<!--- #else -->")
+    RE_NAME_SEP = re.compile(r"[\s|]+")
 
     def __init__(self, md: Markdown, extension: ConditionExtension) -> None:
         super().__init__(md)
@@ -42,8 +43,8 @@ class ConditionPreprocessor(Preprocessor):
                     )
                 block_start = number
                 seen_else = False
-                # `#if A B` is true when the configured symbol is one of the listed names
-                keep = self.symbol in start.group(1).split()
+                # `#if A B` / `#if A | B` is true when the symbol is one of the listed names
+                keep = self.symbol in self.RE_NAME_SEP.split(start.group(1))
                 continue
             if self.RE_ELSE.match(line):
                 if block_start is None:

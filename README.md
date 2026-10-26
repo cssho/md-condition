@@ -38,7 +38,8 @@ not RELEASE
 ### Rules
 
 - `<!--- #if A B -->` is true when the configured `symbol` is exactly one of the listed names
-  (`DEBUG` does not match `DEBUG_X`). With no `symbol` configured, every `#if` is false.
+  (`DEBUG` does not match `DEBUG_X`). Names are separated by spaces and/or `|`, so
+  `#if A | B` and `#if A|B` mean the same. With no `symbol` configured, every `#if` is false.
 - `#else` is optional; nested `#if` blocks are not supported.
 - Malformed blocks (unclosed `#if`, stray `#else` / `#endif`, duplicate `#else`, nesting) raise
   `md_condition.ConditionSyntaxError` with the offending line number.
