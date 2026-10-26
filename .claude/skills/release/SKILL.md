@@ -12,6 +12,6 @@ The version comes from the git tag via setuptools-scm, so there is no file to bu
 2. Verify locally — both must pass:
    - `uv run pytest`
    - `uv run ruff check .` and `uv run ruff format --check .`
-3. Summarize commits since the previous tag (`git log <prev-tag>..HEAD --oneline`) as release notes, and show them to the user for confirmation before creating the release.
-4. `gh release create v$ARGUMENTS --target master --title v$ARGUMENTS --notes "<notes>"`. This fires `.github/workflows/pythonpublish.yml`, which builds with version `$ARGUMENTS` and uploads to PyPI.
-5. Report the release URL and check the publish run with `gh run list --workflow pythonpublish.yml --limit 1`.
+3. Summarize commits since the previous tag (`git log <prev-tag>..HEAD --oneline`) as release notes. If the release contains user-visible behavior changes, add a "Breaking changes / migration" section. Show the notes to the user for confirmation before creating the release.
+4. `gh release create v$ARGUMENTS --target master --title v$ARGUMENTS --notes-file <notes>`. Publishing the release fires `.github/workflows/pythonpublish.yml` (`release: published`; a draft does not).
+5. The publish job runs in the `pypi` environment, which only accepts `v*` tags and **waits for the user's approval**. Report the release URL and the run (`gh run list --workflow pythonpublish.yml --limit 1`), and tell the user to approve it in the Actions UI. Do not approve it yourself.
