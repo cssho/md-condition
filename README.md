@@ -35,6 +35,14 @@ not RELEASE
 <p>not RELEASE</p>
 ```
 
+### Rules
+
+- `<!--- #if A B -->` is true when the configured `symbol` is exactly one of the listed names
+  (`DEBUG` does not match `DEBUG_X`). With no `symbol` configured, every `#if` is false.
+- `#else` is optional; nested `#if` blocks are not supported.
+- Malformed blocks (unclosed `#if`, stray `#else` / `#endif`, duplicate `#else`, nesting) raise
+  `md_condition.ConditionSyntaxError` with the offending line number.
+
 ## MkDocs Integration
 
 In your mkdocs.yml add this to markdown_extensions.

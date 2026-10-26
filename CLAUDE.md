@@ -16,10 +16,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Python >=3.10, Markdown >=3.2. Markdown 3.0/3.1 can't import on modern Python (they need `pkg_resources`).
 - master is protected by a ruleset: changes go through PRs, and the `ci-ok` check (aggregates lint + the test matrix) must pass.
 - The whole extension is a single `Preprocessor` in `md_condition/preprocessor.py`, registered at priority 50. `makeExtension` in `__init__.py` is what lets `md_condition` work as a string name in MkDocs `markdown_extensions`.
-- Known behaviors to keep in mind (don't change them silently, since they're user-visible):
-  - The symbol is interpolated into a regex unescaped and matched as a substring (`.*DEBUG.*`), so `DEBUG` also matches `#if DEBUG_X`.
-  - Nested `#if` blocks are not supported. `validate` only checks that the counts of `#if` and `#endif` are equal.
-  - Unbalanced blocks raise `AssertionError` from an `assert` statement (stripped under `python -O`). The tests rely on `AssertionError`.
+- Syntax rules are documented in README "Rules" and are user-visible; keep README, tests, and code in sync when changing them.
+- `ConditionSyntaxError` subclasses both `ValueError` and `AssertionError`; the latter keeps callers from <= 0.1.x (which used `assert`) working. Don't drop it without a major version bump.
 
 ## Release
 

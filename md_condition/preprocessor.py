@@ -10,53 +10,61 @@ if TYPE_CHECKING:
     from md_condition.extension import ConditionExtension
 
 
+class ConditionSyntaxError(ValueError, AssertionError):
+    """Malformed ``#if`` / ``#else`` / ``#endif`` blocks.
+
+    Also an ``AssertionError`` for compatibility with <= 0.1.x, which used ``assert``.
+    """
+
+
 class ConditionPreprocessor(Preprocessor):
-    RE_START = re.compile(r"<!--- #if .* -->")
+    RE_START = re.compile(r"<!--- #if (.*?) -->")
     RE_END = re.compile(r"<!--- #endif -->")
     RE_ELSE = re.compile(r"<!--- #else -->")
 
     def __init__(self, md: Markdown, extension: ConditionExtension) -> None:
         super().__init__(md)
-        symbol = extension.getConfig("symbol")
-        self.re_symbol_start = re.compile(r"<!--- #if .*" + symbol + r".* -->")
-
-    def validate(self, lines: list[str]) -> None:
-        target_lines_start = []
-        target_lines_end = []
-        for index, line in enumerate(lines):
-            if self.RE_START.match(line):
-                target_lines_start.append(f"{index}. {line}")
-            if self.RE_END.match(line):
-                target_lines_end.append(f"{index}. {line}")
-
-        assert len(target_lines_start) == len(target_lines_end), (
-            f"Unbalanced if / endif blocks\n{target_lines_start}\n{target_lines_end}"
-        )
+        self.symbol = extension.getConfig("symbol")
 
     def run(self, lines: list[str]) -> list[str]:
-        self.validate(lines)
         new_lines = []
 
-        matching = False
-        symbol_matching = False
-        for line in lines:
-            start_head = False
-            if not matching:
-                if self.RE_START.match(line):
-                    start_head = True
-                    matching = True
-                    symbol_match_start = self.re_symbol_start.match(line)
-                    if symbol_match_start:
-                        symbol_matching = True
-            else:
-                if self.RE_ELSE.match(line):
-                    symbol_matching = not symbol_matching
-                    continue
-                if self.RE_END.match(line):
-                    matching = False
-                    symbol_matching = False
-                    continue
-            if not matching or symbol_matching and not start_head:
+        block_start = None  # 1-based line of the open #if; None outside a block
+        seen_else = False
+        keep = True
+        for number, line in enumerate(lines, start=1):
+            start = self.RE_START.match(line)
+            if start:
+                if block_start is not None:
+                    raise ConditionSyntaxError(
+                        f"line {number}: nested #if is not supported "
+                        f"(block opened at line {block_start})"
+                    )
+                block_start = number
+                seen_else = False
+                # `#if A B` is true when the configured symbol is one of the listed names
+                keep = self.symbol in start.group(1).split()
+                continue
+            if self.RE_ELSE.match(line):
+                if block_start is None:
+                    raise ConditionSyntaxError(f"line {number}: #else without #if")
+                if seen_else:
+                    raise ConditionSyntaxError(
+                        f"line {number}: duplicate #else in block opened at line {block_start}"
+                    )
+                seen_else = True
+                keep = not keep
+                continue
+            if self.RE_END.match(line):
+                if block_start is None:
+                    raise ConditionSyntaxError(f"line {number}: #endif without #if")
+                block_start = None
+                keep = True
+                continue
+            if keep:
                 new_lines.append(line)
+
+        if block_start is not None:
+            raise ConditionSyntaxError(f"line {block_start}: #if is never closed with #endif")
 
         return new_lines

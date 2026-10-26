@@ -3,7 +3,7 @@ import textwrap
 import markdown
 import pytest
 
-from md_condition import ConditionExtension
+from md_condition import ConditionExtension, ConditionSyntaxError
 
 
 @pytest.fixture
@@ -89,12 +89,30 @@ def test_condition(md: markdown.Markdown, source: str, expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "source",
+    ("symbol", "condition", "kept"),
+    [
+        pytest.param("DEBUG", "DEBUG_X", False, id="no_prefix_match"),
+        pytest.param("DEBUG", "MY_DEBUG", False, id="no_suffix_match"),
+        pytest.param("DEBUG_X", "DEBUG_X", True, id="exact"),
+        pytest.param("C++", "C++", True, id="regex_metachars"),
+        pytest.param("C++", "CXX", False, id="regex_metachars_no_match"),
+        pytest.param("", "DEBUG", False, id="empty_symbol_matches_nothing"),
+    ],
+)
+def test_symbol_is_matched_as_whole_name(symbol: str, condition: str, kept: bool) -> None:
+    md = markdown.Markdown(extensions=[ConditionExtension(symbol=symbol)])
+    output = md.convert(f"<!--- #if {condition} -->\nyes\n<!--- #else -->\nno\n<!--- #endif -->")
+    assert output == ("<p>yes</p>" if kept else "<p>no</p>")
+
+
+@pytest.mark.parametrize(
+    ("source", "message"),
     [
         pytest.param(
             """\
             <!--- #if DEBUG RELEASE -->
             # 1""",
+            "line 1: #if is never closed",
             id="missing_endif",
         ),
         pytest.param(
@@ -103,13 +121,45 @@ def test_condition(md: markdown.Markdown, source: str, expected: str) -> None:
             # 1
             <!--- #endif -->
             <!--- #endif -->""",
+            "line 4: #endif without #if",
             id="extra_endif",
+        ),
+        pytest.param(
+            """\
+            # 1
+            <!--- #else -->""",
+            "line 2: #else without #if",
+            id="else_without_if",
+        ),
+        pytest.param(
+            """\
+            <!--- #if DEBUG -->
+            <!--- #else -->
+            <!--- #else -->
+            <!--- #endif -->""",
+            "line 3: duplicate #else",
+            id="duplicate_else",
+        ),
+        pytest.param(
+            """\
+            <!--- #if DEBUG -->
+            <!--- #if RELEASE -->
+            <!--- #endif -->
+            <!--- #endif -->""",
+            "line 2: nested #if is not supported",
+            id="nested",
         ),
     ],
 )
-def test_unbalanced(md: markdown.Markdown, source: str) -> None:
-    with pytest.raises(AssertionError, match="Unbalanced if / endif blocks"):
+def test_malformed_blocks(md: markdown.Markdown, source: str, message: str) -> None:
+    with pytest.raises(ConditionSyntaxError, match=message):
         convert(md, source)
+
+
+def test_error_is_still_an_assertion_error(md: markdown.Markdown) -> None:
+    # Backward compatibility with <= 0.1.x, which raised via `assert`
+    with pytest.raises(AssertionError):
+        convert(md, "<!--- #if DEBUG -->")
 
 
 def test_make_extension_by_name() -> None:
