@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run -q --no-project --with flake8 python \"$CLAUDE_PROJECT_DIR/.claude/hooks/flake8_gate.py\"",
+            "timeout": 60,
+            "statusMessage": "flake8 CI gate..."
+          }
+        ]
+      }
+    ]
+  }
+}
