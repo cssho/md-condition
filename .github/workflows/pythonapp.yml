@@ -9,40 +9,41 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: astral-sh/setup-uv@v6
+    - run: uv run ruff format --check .
+    - run: uv run ruff check .
 
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
-
+        include:
+          # Lowest supported Markdown (pyproject: Markdown>=3.2)
+          - python-version: '3.10'
+            markdown: '3.2.*'
+    name: test (py${{ matrix.python-version }}${{ matrix.markdown && format(', markdown {0}', matrix.markdown) || '' }})
     steps:
     - uses: actions/checkout@v5
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+    - uses: astral-sh/setup-uv@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pip install pytest
-        pytest -v test.py
+    - name: Test
+      if: ${{ !matrix.markdown }}
+      run: uv run pytest -v
+    - name: Test with lowest Markdown
+      if: ${{ matrix.markdown }}
+      run: uv run --isolated --with "markdown==${{ matrix.markdown }}" pytest -v
 
   # Single stable check name for the branch ruleset, independent of the matrix
   ci-ok:
     if: always()
-    needs: build
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
-    - run: test "${{ needs.build.result }}" = success
+    - run: test "${{ needs.lint.result }}" = success && test "${{ needs.test.result }}" = success

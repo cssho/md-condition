@@ -6,9 +6,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run -q --no-project --with flake8 python \"$CLAUDE_PROJECT_DIR/.claude/hooks/flake8_gate.py\"",
+            "command": "uv run -q --project \"$CLAUDE_PROJECT_DIR\" python \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint_gate.py\"",
             "timeout": 60,
-            "statusMessage": "flake8 CI gate..."
+            "statusMessage": "ruff..."
           }
         ]
       }
