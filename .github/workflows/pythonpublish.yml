@@ -8,17 +8,43 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  # Test and build without OIDC permissions; only the publish job can mint a PyPI token
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      with:
+        fetch-depth: 0  # setuptools-scm derives the version from tags
+    - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78  # v7.6.0
+    - name: Test
+      run: |
+        uv run ruff check .
+        uv run pytest
+    - name: Build
+      run: uv build
+    - name: Check version matches tag
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+      run: |
+        # A malformed tag (e.g. vv0.2.0) makes setuptools-scm fall back to a dev version
+        ls dist
+        test -f "dist/md_condition-${TAG#v}-py3-none-any.whl"
+        test -f "dist/md_condition-${TAG#v}.tar.gz"
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+      with:
+        name: dist
+        path: dist/
+
+  publish:
+    needs: build
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write  # PyPI Trusted Publishing
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
       with:
-        fetch-depth: 0  # setuptools-scm derives the version from tags
-    - uses: astral-sh/setup-uv@v7
-    - name: Build
-      run: uv build
+        name: dist
+        path: dist/
     - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
