@@ -25,7 +25,10 @@ class ConditionPreprocessor(Preprocessor):
 
     def __init__(self, md: Markdown, extension: ConditionExtension) -> None:
         super().__init__(md)
-        self.symbol = extension.getConfig("symbol")
+        # `symbol` is a string ("DEBUG", "DEBUG RELEASE", "DEBUG|RELEASE") or a list of them
+        symbol = extension.getConfig("symbol") or ""
+        values = [symbol] if isinstance(symbol, str) else symbol
+        self.symbols = {name for value in values for name in self.RE_NAME.findall(str(value))}
 
     def run(self, lines: list[str]) -> list[str]:
         new_lines = []
@@ -43,8 +46,8 @@ class ConditionPreprocessor(Preprocessor):
                     )
                 block_start = number
                 seen_else = False
-                # `#if A B` / `#if A | B` is true when the symbol is one of the listed names
-                keep = self.symbol in self.RE_NAME.findall(start.group(1))
+                # `#if A B` / `#if A | B` is true when any configured symbol is listed
+                keep = not self.symbols.isdisjoint(self.RE_NAME.findall(start.group(1)))
                 continue
             if self.RE_ELSE.match(line):
                 if block_start is None:

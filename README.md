@@ -37,9 +37,11 @@ not RELEASE
 
 ### Rules
 
-- `<!--- #if A B -->` is true when the configured `symbol` is exactly one of the listed names
+- `symbol` defines one or more symbols: `DEBUG`, `DEBUG RELEASE`, `DEBUG|RELEASE`, or a list
+  `[DEBUG, RELEASE]`. With no `symbol` configured, every `#if` is false.
+- `<!--- #if A B -->` is true when any defined symbol is exactly one of the listed names
   (`DEBUG` does not match `DEBUG_X`). Names are separated by spaces and/or `|`, so
-  `#if A | B` and `#if A|B` mean the same. With no `symbol` configured, every `#if` is false.
+  `#if A | B` and `#if A|B` mean the same.
 - `#else` is optional; nested `#if` blocks are not supported.
 - Malformed blocks (unclosed `#if`, stray `#else` / `#endif`, duplicate `#else`, nesting) raise
   `md_condition.ConditionSyntaxError` with the offending line number.
@@ -52,4 +54,12 @@ In your mkdocs.yml add this to markdown_extensions.
 markdown_extensions:
   - md_condition:
       symbol: DEBUG
+```
+
+To define several symbols at once:
+
+```yaml
+markdown_extensions:
+  - md_condition:
+      symbol: [DEBUG, RELEASE]
 ```

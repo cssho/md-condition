@@ -112,6 +112,47 @@ def test_symbol_is_matched_as_whole_name(symbol: str, condition: str, kept: bool
     assert output == ("<p>yes</p>" if kept else "<p>no</p>")
 
 
+ISSUE_6_SOURCE = """\
+# 1
+<!--- #if DEBUG -->
+DEBUG
+<!--- #else -->
+No DEBUG
+<!--- #endif -->
+# 2
+<!--- #if RELEASE -->
+RELEASE
+<!--- #else -->
+No RELEASE
+<!--- #endif -->"""
+
+
+@pytest.mark.parametrize(
+    ("symbol", "debug", "release"),
+    [
+        # Issue #6: multiple defined symbols, each usable as its own condition
+        pytest.param("DEBUG RELEASE", True, True, id="space_separated"),
+        pytest.param("DEBUG|RELEASE", True, True, id="pipe_separated"),
+        pytest.param(["DEBUG", "RELEASE"], True, True, id="list"),
+        pytest.param(("DEBUG",), True, False, id="tuple"),
+        pytest.param("RELEASE", False, True, id="single"),
+        pytest.param([], False, False, id="empty_list"),
+        pytest.param(None, False, False, id="none"),
+    ],
+)
+def test_multiple_symbols(symbol, debug: bool, release: bool) -> None:
+    md = markdown.Markdown(extensions=[ConditionExtension(symbol=symbol)])
+    expected = "<h1>1</h1>\n<p>{}</p>\n<h1>2</h1>\n<p>{}</p>".format(
+        "DEBUG" if debug else "No DEBUG", "RELEASE" if release else "No RELEASE"
+    )
+    assert md.convert(ISSUE_6_SOURCE) == expected
+
+
+def test_multiple_symbols_any_listed_name_matches() -> None:
+    md = markdown.Markdown(extensions=[ConditionExtension(symbol=["DEBUG", "STAGING"])])
+    assert md.convert("<!--- #if RELEASE STAGING -->\nyes\n<!--- #endif -->") == "<p>yes</p>"
+
+
 @pytest.mark.parametrize(
     ("source", "message"),
     [
@@ -177,3 +218,12 @@ def test_make_extension_by_name() -> None:
         },
     )
     assert md.convert("<!--- #if DEBUG -->\nyes\n<!--- #endif -->") == "<p>yes</p>"
+
+
+def test_make_extension_by_name_with_list() -> None:
+    # MkDocs passes YAML lists through as Python lists
+    md = markdown.Markdown(
+        extensions=["md_condition"],
+        extension_configs={"md_condition": {"symbol": ["DEBUG", "RELEASE"]}},
+    )
+    assert md.convert("<!--- #if RELEASE -->\nyes\n<!--- #endif -->") == "<p>yes</p>"
