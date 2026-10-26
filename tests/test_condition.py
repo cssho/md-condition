@@ -98,6 +98,7 @@ def test_condition(md: markdown.Markdown, source: str, expected: str) -> None:
         pytest.param("C++", "CXX", False, id="regex_metachars_no_match"),
         pytest.param("", "DEBUG", False, id="empty_symbol_matches_nothing"),
         pytest.param("", "A | B", False, id="empty_symbol_ignores_separators"),
+        pytest.param("", "| A |", False, id="empty_symbol_edge_separators"),
         # Issue #7: `|`-separated names, with or without spaces
         pytest.param("THAT", "THIS | THAT | OTHER", True, id="pipe_spaced"),
         pytest.param("THAT", "THIS|THAT|OTHER", True, id="pipe_compact"),
