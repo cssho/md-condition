@@ -44,7 +44,10 @@ not RELEASE
   `#if A | B` and `#if A|B` mean the same.
 - `#else` is optional; nested `#if` blocks are not supported.
 - Malformed blocks (unclosed `#if`, stray `#else` / `#endif`, duplicate `#else`, nesting) raise
-  `md_condition.ConditionSyntaxError` with the offending line number.
+  `md_condition.ConditionSyntaxError` with the offending line number and text.
+- Inside fenced code blocks (```` ``` ```` / `~~~`), complete `#if` … `#endif` blocks still apply
+  (conditional code samples), but malformed directives are left as text, so docs can show
+  md-condition syntax without breaking the build.
 
 ## MkDocs Integration
 
