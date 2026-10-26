@@ -1,6 +1,7 @@
 ---
 name: release
-description: Release a new md-condition version to PyPI — verify master, then create the GitHub release whose tag sets the version and triggers the publish workflow. Usage: /release <version>
+description: "Release a new md-condition version to PyPI — verify master, then create the GitHub release whose tag sets the version and triggers the publish workflow. Usage: /release <version>"
+argument-hint: "<version, e.g. 0.2.0>"
 disable-model-invocation: true
 ---
 
