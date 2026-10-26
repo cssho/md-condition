@@ -21,4 +21,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Release
 
-Create a GitHub release with tag `v<version>` (use `/release`). `.github/workflows/pythonpublish.yml` builds with the tag as the version and uploads to PyPI via Trusted Publishing (OIDC, GitHub environment `pypi`; no API token secrets).
+Create a GitHub release with tag `v<version>` (use `/release`). `.github/workflows/pythonpublish.yml` builds with the tag as the version and uploads to PyPI via Trusted Publishing (OIDC, GitHub environment `pypi`; no API token secrets). The `pypi` environment only accepts `v*` tags and requires the maintainer's approval; `v*` tags are protected from deletion and moving by a tag ruleset. `MANIFEST.in` keeps repo tooling (`.claude/`, `.github/`, CLAUDE.md, uv.lock) out of the sdist.
