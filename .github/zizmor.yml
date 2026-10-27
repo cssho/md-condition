@@ -1,0 +1,4 @@
+rules:
+  dependabot-cooldown:
+    config:
+      days: 3  # matches dependabot.yml (zizmor's default is 7)
