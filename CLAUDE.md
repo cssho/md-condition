@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `python` on this machine is the Windows Store stub, not a real interpreter. Run everything through `uv` (dev deps live in the `dev` dependency group of `pyproject.toml`):
 
-- Tests: `uv run pytest` (single test: `-k single_else`)
+- Tests: `uv run pytest` (single test: `-k single_else`). CI runs `--cov` with `fail_under = 100` (branch coverage), so new code needs tests for every branch.
 - Lowest supported Markdown: `uv run --isolated --python 3.10 --with "markdown==3.2.*" pytest`
 - Lint/format (CI fails on either): `uv run ruff check .` and `uv run ruff format --check .`
 - Build: `uv build`. The version comes from the latest git tag via setuptools-scm; there is no version field to edit.
