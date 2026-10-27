@@ -8,7 +8,7 @@ import pytest
 from md_condition import ConditionExtension, ConditionSyntaxError
 
 
-def preprocess(source: str, symbol="DEBUG") -> str:
+def preprocess(source: str, symbol: object = "DEBUG") -> str:
     md = markdown.Markdown(extensions=[ConditionExtension(symbol=symbol)])
     lines = textwrap.dedent(source).split("\n")
     return "\n".join(md.preprocessors["condition"].run(lines))
@@ -152,7 +152,7 @@ def test_error_message_includes_the_line() -> None:
         pytest.param([2024, "DEBUG"], "2024", id="int_in_list"),
     ],
 )
-def test_yaml_scalar_symbols(symbol, condition: str) -> None:
+def test_yaml_scalar_symbols(symbol: object, condition: str) -> None:
     # YAML turns `symbol: 2024` / `symbol: yes` into int / bool
     assert preprocess(f"<!--- #if {condition} -->\nyes\n<!--- #endif -->", symbol=symbol) == "yes"
 

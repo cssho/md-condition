@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from markdown import Markdown
@@ -42,6 +43,7 @@ class ConditionPreprocessor(Preprocessor):
         # `symbol` is a string ("DEBUG", "DEBUG RELEASE", "DEBUG|RELEASE"), a list of them,
         # or a YAML scalar such as 2024 (stringified)
         symbol = extension.getConfig("symbol")
+        values: Iterable[object]
         if symbol is None:
             values = []
         elif isinstance(symbol, (list, tuple, set, frozenset)):
@@ -161,8 +163,7 @@ class ConditionPreprocessor(Preprocessor):
     def _closes_fence(cls, line: str, fence: str) -> bool:
         # CommonMark: same character, at least as long, nothing else on the line
         closing = cls.RE_FENCE_CLOSE.match(line)
-        return (
-            bool(closing)
-            and closing.group(1)[0] == fence[0]
-            and len(closing.group(1)) >= len(fence)
-        )
+        if closing is None:
+            return False
+        marker = closing.group(1)
+        return marker[0] == fence[0] and len(marker) >= len(fence)

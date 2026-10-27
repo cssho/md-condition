@@ -140,7 +140,7 @@ No RELEASE
         pytest.param(None, False, False, id="none"),
     ],
 )
-def test_multiple_symbols(symbol, debug: bool, release: bool) -> None:
+def test_multiple_symbols(symbol: object, debug: bool, release: bool) -> None:
     md = markdown.Markdown(extensions=[ConditionExtension(symbol=symbol)])
     expected = "<h1>1</h1>\n<p>{}</p>\n<h1>2</h1>\n<p>{}</p>".format(
         "DEBUG" if debug else "No DEBUG", "RELEASE" if release else "No RELEASE"

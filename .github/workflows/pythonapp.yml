@@ -22,6 +22,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}  # enables online audits (known-vulnerable-actions, impostor-commit)
       run: uv run zizmor --format=github .
+    - run: uv run mypy
 
   test:
     runs-on: ubuntu-latest

@@ -1,3 +1,5 @@
+from typing import Any
+
 from markdown import Markdown
 from markdown.extensions import Extension
 
@@ -5,7 +7,7 @@ from md_condition.preprocessor import ConditionPreprocessor
 
 
 class ConditionExtension(Extension):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self.config = {
             "symbol": ["", "Defined symbol(s): a string separated by spaces/`|`, or a list"],
         }
