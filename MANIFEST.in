@@ -1,4 +1,4 @@
 # setuptools-scm adds every git-tracked file to the sdist; keep repo tooling out
 prune .claude
 prune .github
-exclude .gitignore CLAUDE.md uv.lock
+exclude .gitignore CLAUDE.md SECURITY.md uv.lock

@@ -47,7 +47,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Test
       if: ${{ matrix.markdown == 'locked' }}
-      run: uv run pytest -v
+      run: uv run pytest -v --cov
     - name: Test with lowest Markdown
       if: ${{ matrix.markdown != 'locked' }}
       run: uv run --isolated --with "markdown==${{ matrix.markdown }}" pytest -v
