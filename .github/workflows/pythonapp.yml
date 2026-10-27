@@ -13,16 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      with:
+        persist-credentials: false
     - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
     - run: uv run ruff format --check .
     - run: uv run ruff check .
+    - name: Audit workflows (zizmor)
+      env:
+        GH_TOKEN: ${{ github.token }}  # enables online audits (known-vulnerable-actions, impostor-commit)
+      run: uv run zizmor --format=github .
 
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
         markdown: ['locked']
         include:
           # Lowest supported Markdown (pyproject: Markdown>=3.2). Overrides the
@@ -33,6 +39,8 @@ jobs:
     name: test (py${{ matrix.python-version }}${{ matrix.markdown != 'locked' && format(', markdown {0}', matrix.markdown) || '' }})
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      with:
+        persist-credentials: false
     - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
       with:
         python-version: ${{ matrix.python-version }}
