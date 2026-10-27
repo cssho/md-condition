@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Tests: `uv run pytest` (single test: `-k single_else`)
 - Lowest supported Markdown: `uv run --isolated --python 3.10 --with "markdown==3.2.*" pytest`
 - Lint/format (CI fails on either): `uv run ruff check .` and `uv run ruff format --check .`
+- Type check (also in CI): `uv run mypy` (strict, covers `md_condition` and `tests`). The package ships `py.typed`.
 - Build: `uv build`. The version comes from the latest git tag via setuptools-scm; there is no version field to edit.
 
 ## Code
