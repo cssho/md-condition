@@ -3,7 +3,12 @@
 This is an extension to [Python-Markdown](https://python-markdown.github.io)
 which allows conditional compilations to be inserted into the text.
 
-[![PyPI version](https://badge.fury.io/py/md-condition.svg)](https://badge.fury.io/py/md-condition)
+[![PyPI](https://img.shields.io/pypi/v/md-condition)](https://pypi.org/project/md-condition/)
+[![CI](https://github.com/cssho/md-condition/actions/workflows/pythonapp.yml/badge.svg?branch=master)](https://github.com/cssho/md-condition/actions/workflows/pythonapp.yml)
+[![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/cssho/md-condition/master/pyproject.toml)](https://pypi.org/project/md-condition/)
+[![License](https://img.shields.io/pypi/l/md-condition)](LICENSE)
+[![Downloads](https://static.pepy.tech/badge/md-condition/month)](https://pepy.tech/project/md-condition)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## Install
 This module can now be installed using `pip`.
